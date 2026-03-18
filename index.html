@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KARATE SCOREBOARD FIX</title>
+    <title>KARATE SCOREBOARD PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -26,7 +26,6 @@
         .score-row { display: flex; align-items: center; gap: 20px; }
         .score-val { font-size: 6.5rem; font-weight: bold; font-family: 'Share Tech Mono', monospace; line-height: 1; }
         
-        /* Senshu Style */
         .senshu { 
             width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; 
             transition: all 0.2s; opacity: 1;
@@ -41,7 +40,6 @@
         .penalty { height: 40px; border: 1.5px solid white; background: none; color: white; border-radius: 6px; font-size: 0.9rem; font-weight: bold; }
         .penalty.active { background-color: var(--yellow); color: black; border-color: var(--yellow); }
 
-        /* --- TIMER --- */
         .timer-section { background-color: #000; padding: 10px 0; display: flex; flex-direction: column; align-items: center; }
         .timer-display { 
             display: flex; align-items: center; justify-content: center;
@@ -50,7 +48,6 @@
         .t-num { font-size: 8rem; font-weight: bold; line-height: 1; }
         .dots { font-size: 6rem; line-height: 1; margin-bottom: 10px; padding: 0 5px; }
         
-        /* Dấu chấm cực rõ cho 00.00 */
         .decimal-point {
             font-size: 8rem; line-height: 0.5; align-self: flex-end; 
             padding-bottom: 20px; display: none; margin: 0 5px;
@@ -59,7 +56,6 @@
         .red-text .t-num { font-size: 8.5rem; } 
         .red-text .ms-num { font-size: 6rem; }
 
-        /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 0.6fr; gap: 5px; width: 98%; margin-top: 10px; }
         .btn-ctrl { padding: 15px 0; border-radius: 10px; color: white; font-weight: bold; border: none; font-size: 0.8rem; }
         .btn-start { background-color: #70ad47; }
@@ -68,8 +64,13 @@
 
         #overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 2000; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; 
+            justify-content: center; align-items: center; padding: 10px;
         }
+        #ov-time { font-family: 'Share Tech Mono', monospace; font-size: 35vw; color: var(--yellow); margin-bottom: 40px; text-align: center; }
+        .ov-controls { display: flex; flex-direction: row; gap: 8px; width: 95%; justify-content: center; }
+        .ov-controls button { flex: 1; padding: 20px 0; font-size: 1rem; border-radius: 12px; font-weight: bold; border: none; text-transform: uppercase; color: white; }
+
         .yellow-text { color: var(--yellow); }
         .red-text { color: var(--red); }
         button:active { opacity: 0.8; transform: scale(0.96); }
@@ -80,7 +81,7 @@
     <div class="score-container">
         <div class="side aka">
             <div style="display:flex; justify-content: space-between; width:90%; align-items:center">
-                <div style="font-weight:bold; font-size:1.5rem">AKA</div>
+               <div style="font-weight:bold; font-size:1.5rem">AKA</div>
                 <div style="width:40px"></div>
             </div>
             <div class="score-row">
@@ -142,38 +143,55 @@
     </div>
 
     <div id="overlay">
-        <div id="ov-time" style="font-family:'Share Tech Mono'; font-size:12rem; color:var(--yellow)">60</div>
-        <div style="display:flex; gap:10px; width:90%; margin-top:20px">
-            <button class="btn-ctrl btn-start" style="flex:1" onclick="startOV()">START</button>
-            <button class="btn-ctrl btn-stop" style="flex:1" onclick="stopOV()">STOP</button>
-            <button class="btn-ctrl btn-gray" style="flex:1" onclick="closeOverlay()">ĐÓNG</button>
+        <div id="ov-time">60</div>
+        <div class="ov-controls">
+            <button class="btn-ctrl btn-start" onclick="startOV()">START</button>
+            <button class="btn-ctrl btn-stop" onclick="stopOV()">STOP</button>
+            <button class="btn-ctrl btn-gray" onclick="closeOverlay()">ĐÓNG</button>
         </div>
     </div>
 
 <script>
     let timeLeft = 180980, timerId = null, audioCtx = null, played15s = false;
-    let ovTimeLeft = 60980, ovTimerId = null;
+    let ovTimeLeft = 60000, ovTimerId = null;
     let currentPresetIdx = 0; 
-    let senshuEnabled = true; // Biến trạng thái Senshu
+    let senshuEnabled = true;
 
-    function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    // Sửa lỗi Audio trên Mobile: Cần chạm tay để kích hoạt
+    function initAudio() { 
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
     
     function changeScore(id, val) { 
         let el = document.getElementById(id); 
         el.innerText = Math.max(0, parseInt(el.innerText) + val); 
     }
 
-    // Kích hoạt Senshu cho một bên
+    function toggleSenshuLock() {
+        senshuEnabled = !senshuEnabled;
+        const aka = document.getElementById('senshuAka');
+        const ao = document.getElementById('senshuAo');
+        if(!senshuEnabled) {
+            aka.classList.add('disabled'); ao.classList.add('disabled');
+            aka.classList.remove('active'); ao.classList.remove('active');
+        } else {
+            aka.classList.remove('disabled'); ao.classList.remove('disabled');
+        }
+    }
+
     function activateSenshu(side) {
         if(!senshuEnabled) return;
         const aka = document.getElementById('senshuAka');
         const ao = document.getElementById('senshuAo');
         if(side === 'Aka') {
-            aka.classList.toggle('active');
-            ao.classList.remove('active');
+            aka.classList.toggle('active'); ao.classList.remove('active');
         } else {
-            ao.classList.toggle('active');
-            aka.classList.remove('active');
+            ao.classList.toggle('active'); aka.classList.remove('active');
         }
     }
 
@@ -206,21 +224,45 @@
 
     function start() {
         if (timerId || timeLeft <= 0) return;
-        initAudio(); let last = Date.now();
+        initAudio(); // Ép kích hoạt âm thanh khi nhấn START
+        let last = Date.now();
         timerId = setInterval(() => {
             let delta = Date.now() - last; last = Date.now();
             let old = timeLeft; timeLeft -= delta;
-            if (old >= 16000 && timeLeft < 16000 && !played15s) { ring(1000); played15s = true; }
-            if (timeLeft <= 0) { timeLeft = 0; stop(); updateUI(); ring(2000); } else updateUI();
+            
+            // Chuông 15.98 giây
+            if (old >= 16000 && timeLeft < 16000 && !played15s) { 
+                ring(1000); 
+                played15s = true; 
+            }
+            
+            // Chuông 00.00 giây
+            if (timeLeft <= 0) { 
+                timeLeft = 0; 
+                stop(); 
+                updateUI(); 
+                ring(2000); 
+            } else {
+                updateUI();
+            }
         }, 20);
     }
 
     function stop() { clearInterval(timerId); timerId = null; }
+
     function ring(d) {
         if(!audioCtx) return;
-        let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
-        o.type = 'square'; o.frequency.value = 450; o.connect(g); g.connect(audioCtx.destination);
-        o.start(); setTimeout(() => o.stop(), d);
+        // Đảm bảo AudioContext không bị treo
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        let o = audioCtx.createOscillator(); 
+        let g = audioCtx.createGain();
+        o.type = 'square'; 
+        o.frequency.value = 450; 
+        o.connect(g); 
+        g.connect(audioCtx.destination);
+        o.start(); 
+        setTimeout(() => o.stop(), d);
     }
 
     function togglePreset() {
@@ -232,21 +274,29 @@
         stop(); updateUI();
     }
 
-    function openOverlay() { stop(); document.getElementById('overlay').style.display = 'flex'; ovTimeLeft = 60980; updateUIOV(); }
+    function openOverlay() { stop(); document.getElementById('overlay').style.display = 'flex'; ovTimeLeft = 60000; updateUIOV(); }
     function closeOverlay() { stopOV(); document.getElementById('overlay').style.display = 'none'; }
     function startOV() {
         if (ovTimerId || ovTimeLeft <= 0) return;
-        initAudio(); let last = Date.now();
+        initAudio(); 
+        let last = Date.now();
         ovTimerId = setInterval(() => {
             let delta = Date.now() - last; last = Date.now();
-            ovTimeLeft -= delta; if (ovTimeLeft <= 0) { ovTimeLeft = 0; stopOV(); ring(2000); }
+            ovTimeLeft -= delta; 
+            if (ovTimeLeft <= 0) { 
+                ovTimeLeft = 0; 
+                stopOV(); 
+                ring(2000); 
+            }
             updateUIOV();
-        }, 20);
+        }, 100);
     }
     function stopOV() { clearInterval(ovTimerId); ovTimerId = null; }
     function updateUIOV() {
-        let s = Math.max(0, Math.floor((ovTimeLeft - 1) / 1000));
-        document.getElementById('ov-time').innerText = "00:" + s.toString().padStart(2, '0');
+        let s = Math.ceil(ovTimeLeft / 1000);
+        const ovDisp = document.getElementById('ov-time');
+        ovDisp.innerText = s;
+        ovDisp.style.color = (s <= 10) ? "var(--red)" : "var(--yellow)";
     }
 </script>
 </body>
