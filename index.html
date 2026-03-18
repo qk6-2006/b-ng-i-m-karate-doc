@@ -259,7 +259,7 @@
     }
 
     function togglePreset() {
-        const p = [180, 120, 60, 30];
+        const p = [180, 120, 90 , 60, 15];
         let cur = Math.floor(timeLeft / 1000);
         let next = p[(p.indexOf(cur === 0 ? 180 : cur) + 1) % p.length];
         timeLeft = (next * 1000) + 980;
