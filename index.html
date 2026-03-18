@@ -3,47 +3,37 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KARATE SCOREBOARD - CHUẨN ĐIỆN THOẠI</title>
+    <title>KARATE SCOREBOARD FIX</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #1e1e1e; /* Màu nền xám đậm như ảnh */
-            --aka: #c00000; /* Đỏ như ảnh */
-            --ao: #0070c0; /* Xanh như ảnh */
+            --bg: #1e1e1e; 
+            --aka: #c00000; 
+            --ao: #0070c0; 
             --yellow: #ffff00; 
             --red: #ff0000;
         }
         
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
         body { 
             background-color: var(--bg); 
             color: white; 
-            font-family: system-ui, -apple-system, sans-serif; 
-            margin: 0; 
+            font-family: system-ui, sans-serif; 
+            height: 100vh; 
             display: flex; 
             flex-direction: column; 
-            height: 100vh; 
             overflow: hidden;
             user-select: none; 
         }
 
-        /* --- PHẦN ĐIỂM SỐ (AKA/AO) --- */
+        /* Container Aka/Ao */
         .score-container { 
             display: flex; 
-            flex-direction: column; /* BỐ CỤC DỌC CHO AKA VÀ AO */
-            flex: 1; /* Chiếm nhiều không gian nhất */
-            gap: 10px; /* Khoảng cách giữa AKA và AO */
-            padding: 10px;
-        }
-
-        /* Chế độ ngang - xếp song song */
-        @media (orientation: landscape) {
-            .score-container {
-                flex-direction: row;
-                gap: 5px;
-                padding: 5px;
-            }
+            flex-direction: column; 
+            flex: 1; 
+            gap: 8px; 
+            padding: 8px;
         }
 
         .side { 
@@ -51,121 +41,81 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: space-around; 
-            border-radius: 25px; /* Bo cong nhiều như ảnh */
-            padding: 10px 5px;
-            position: relative;
+            justify-content: space-evenly; 
+            border-radius: 20px; 
+            padding: 5px;
         }
-
         .aka { background-color: var(--aka); }
         .ao { background-color: var(--ao); }
 
-        .name-label { font-size: 2.2rem; font-weight: bold; margin: 0; }
+        .name-label { font-size: 1.5rem; font-weight: bold; }
 
-        /* Vùng điểm và Senshu */
-        .score-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 20px;
-            margin: 5px 0;
-        }
+        .score-row { display: flex; align-items: center; gap: 20px; }
         .score-val { 
-            font-size: 9rem; /* Điểm số rất to */
+            font-size: 6.5rem; 
             font-weight: bold; 
-            line-height: 1; 
             font-family: 'Share Tech Mono', monospace; 
+            line-height: 1;
         }
         
-        .senshu { 
-            width: 50px; 
-            height: 50px; 
-            border: 4px solid white; 
-            border-radius: 50%; 
-        }
-        .senshu.active { background-color: var(--yellow); border-color: var(--yellow); box-shadow: 0 0 15px var(--yellow); }
+        .senshu { width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; }
+        .senshu.active { background-color: var(--yellow); border-color: var(--yellow); }
 
-        /* Grid cho các nút bấm điểm số */
-        .btn-group { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); /* 4 cột đều nhau */
-            gap: 6px; 
-            width: 95%; 
-        }
-        .btn-plus { 
-            padding: 18px 0; /* Nút to ra đáng kể */
-            font-size: 1.5rem; /* Chữ to ra */
-            border-radius: 12px; 
-            background: #ffffff; /* Nút trắng như ảnh */
-            color: #000; 
-            border: none; 
-            font-weight: bold;
-        }
+        .btn-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; width: 95%; }
+        .btn-plus { padding: 12px 0; font-size: 1.2rem; border-radius: 10px; background: white; color: black; border: none; font-weight: bold; }
 
-        /* Grid cho các nút hình phạt */
-        .penalty-row { 
-            display: grid; 
-            grid-template-columns: repeat(5, 1fr); /* 5 cột đều nhau */
-            gap: 4px; 
-            width: 95%; 
-        }
-        .penalty { 
-            height: 50px; /* Nút hình phạt to hơn */
-            border: 2px solid white; 
-            background: none; 
-            color: white; 
-            border-radius: 8px; 
-            font-size: 1rem; 
-            font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .penalty-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 95%; }
+        .penalty { height: 40px; border: 1.5px solid white; background: none; color: white; border-radius: 6px; font-size: 0.9rem; font-weight: bold; }
         .penalty.active { background-color: var(--yellow); color: black; border-color: var(--yellow); }
 
-        /* --- PHẦN TIMER --- */
+        /* --- SỬA LỖI HIỂN THỊ TIMER TẠI ĐÂY --- */
         .timer-section { 
-            padding: 15px 0;
+            background-color: #000; 
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-display { 
             display: flex; 
-            flex-direction: column; 
             align-items: center; 
             justify-content: center;
-            background: #000; /* Nền đen tuyền */
+            font-family: 'Share Tech Mono', monospace; 
+            color: var(--yellow);
+            /* Đảm bảo không bị cắt chữ */
+            height: 120px; 
+            overflow: visible;
         }
-        .timer-display { display: flex; align-items: center; font-family: 'Share Tech Mono', monospace; line-height: 1; }
-        .t-input { 
-            background: transparent; border: none; color: inherit; 
-            font-family: inherit; font-size: 8rem; font-weight: bold; 
-            width: 2ch; text-align: center; outline: none; 
-        }
-        .dots { font-size: 5rem; padding-bottom: 20px; }
-        .time-sub { font-size: 3.5rem; display: none; }
 
-        .yellow { color: var(--yellow); }
-        .red { color: var(--red); }
-
-        /* Các nút điều khiển dưới cùng */
-        .controls { 
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 0.6fr; /* Chia tỉ lệ các nút */
-            gap: 5px; 
-            width: 98%; 
-            padding-bottom: 5px;
+        .t-num { 
+            font-size: 8rem; 
+            font-weight: bold; 
+            line-height: 1;
+            padding: 0 5px;
+            min-width: 1.2ch;
+            text-align: center;
         }
-        .btn-ctrl { 
-            padding: 18px 0; /* Nút điều khiển cũng to ra */
-            border-radius: 12px; color: white; font-weight: bold; border: none; font-size: 1.1rem;
-        }
-        .btn-start { background-color: #70ad47; /* Xanh lá như ảnh */ }
-        .btn-stop { background-color: #c00000; /* Đỏ như ảnh */ }
-        .btn-gray { background-color: #555; /* Xám xậm */ }
 
-        /* Overlay khi chạy 1 phút */
+        .dots { font-size: 6rem; line-height: 1; margin-bottom: 10px; }
+        .time-sub { font-size: 3rem; margin-left: 5px; color: var(--red); display: none; }
+
+        /* Controls */
+        .controls { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 0.6fr; gap: 5px; width: 98%; margin-top: 10px; }
+        .btn-ctrl { padding: 15px 0; border-radius: 10px; color: white; font-weight: bold; border: none; font-size: 0.9rem; }
+        .btn-start { background-color: #70ad47; }
+        .btn-stop { background-color: #c00000; }
+        .btn-gray { background-color: #555; }
+
         #overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; z-index: 2000; flex-direction: column;
-            justify-content: center; align-items: center;
+            background: #000; z-index: 2000; flex-direction: column; justify-content: center; align-items: center;
         }
 
-        button:active { opacity: 0.7; transform: scale(0.95); }
+        .yellow-text { color: var(--yellow); }
+        .red-text { color: var(--red); }
+
+        button:active { opacity: 0.8; transform: scale(0.96); }
     </style>
 </head>
 <body onclick="initAudio()">
@@ -184,11 +134,11 @@
                 <button class="btn-plus" onclick="changeScore('scoreAka', -1)">-1</button>
             </div>
             <div class="penalty-row">
-                <button class="penalty" id="p_Aka_C1" onclick="this.classList.toggle('active')">C1</button>
-                <button class="penalty" id="p_Aka_C2" onclick="this.classList.toggle('active')">C2</button>
-                <button class="penalty" id="p_Aka_C3" onclick="this.classList.toggle('active')">C3</button>
-                <button class="penalty" id="p_Aka_HC" onclick="this.classList.toggle('active')">HC</button>
-                <button class="penalty" id="p_Aka_H" onclick="this.classList.toggle('active')">H</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">C1</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">C2</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">C3</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">HC</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">H</button>
             </div>
         </div>
 
@@ -205,21 +155,21 @@
                 <button class="btn-plus" onclick="changeScore('scoreAo', -1)">-1</button>
             </div>
             <div class="penalty-row">
-                <button class="penalty" id="p_Ao_C1" onclick="this.classList.toggle('active')">C1</button>
-                <button class="penalty" id="p_Ao_C2" onclick="this.classList.toggle('active')">C2</button>
-                <button class="penalty" id="p_Ao_C3" onclick="this.classList.toggle('active')">C3</button>
-                <button class="penalty" id="p_Ao_HC" onclick="this.classList.toggle('active')">HC</button>
-                <button class="penalty" id="p_Ao_H" onclick="this.classList.toggle('active')">H</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">C1</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">C2</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">C3</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">HC</button>
+                <button class="penalty" onclick="this.classList.toggle('active')">H</button>
             </div>
         </div>
     </div>
 
     <div class="timer-section">
-        <div class="timer-display">
-            <input type="text" id="min-in" class="t-input yellow" value="03" maxlength="2" onblur="sync()">
-            <span class="dots yellow">:</span>
-            <input type="text" id="sec-in" class="t-input yellow" value="00" maxlength="2" onblur="sync()">
-            <span id="sub" class="time-sub red">.00</span>
+        <div class="timer-display" id="t-display">
+            <div class="t-num" id="m-disp" onclick="editTime()">03</div>
+            <div class="dots">:</div>
+            <div class="t-num" id="s-disp" onclick="editTime()">00</div>
+            <div id="sub" class="time-sub">.00</div>
         </div>
         
         <div class="controls">
@@ -227,12 +177,12 @@
             <button class="btn-ctrl btn-stop" onclick="stop()">STOP</button>
             <button class="btn-ctrl btn-gray" onclick="togglePreset()">3:00▾</button>
             <button class="btn-ctrl btn-gray" onclick="location.reload()">RESET</button>
-            <button class="btn-ctrl btn-stop" style="flex:0.5" onclick="openOverlay()">🕒</button>
+            <button class="btn-ctrl btn-stop" onclick="openOverlay()">🕒</button>
         </div>
     </div>
 
     <div id="overlay">
-        <div id="ov-time" style="font-family:'Share Tech Mono'; font-size:15rem; color:var(--yellow)">01:00</div>
+        <div id="ov-time" style="font-family:'Share Tech Mono'; font-size:12rem; color:var(--yellow)">01:00</div>
         <div style="display:flex; gap:10px; width:90%; margin-top:20px">
             <button class="btn-ctrl btn-start" style="flex:1" onclick="startOV()">START</button>
             <button class="btn-ctrl btn-stop" style="flex:1" onclick="stopOV()">STOP</button>
@@ -241,36 +191,53 @@
     </div>
 
 <script>
-    // TOÀN BỘ LOGIC XỬ LÝ GiỮ NGUYÊN TỪ MÃ CỦA BẠN
     let timeLeft = 180980, timerId = null, audioCtx = null, played15s = false;
     let ovTimeLeft = 60980, ovTimerId = null;
 
     function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    function changeScore(id, val) { let el = document.getElementById(id); el.innerText = Math.max(0, parseInt(el.innerText) + val); }
+    
+    function changeScore(id, val) { 
+        let el = document.getElementById(id); 
+        el.innerText = Math.max(0, parseInt(el.innerText) + val); 
+    }
+
     function toggleSenshu(side) {
-        const t = document.getElementById('senshu' + side);
-        const o = side === 'Aka' ? document.getElementById('senshuAo') : document.getElementById('senshuAka');
-        t.classList.toggle('active'); if(t.classList.contains('active')) o.classList.remove('active');
+        document.getElementById('senshuAka').classList.toggle('active', side === 'Aka');
+        document.getElementById('senshuAo').classList.toggle('active', side === 'Ao');
     }
-    function sync() {
-        let m = parseInt(document.getElementById('min-in').value) || 0;
-        let s = parseInt(document.getElementById('sec-in').value) || 0;
-        timeLeft = (m * 60 + s) * 1000 + 980; updateUI();
-    }
-    function updateUI() {
-        const minI = document.getElementById('min-in'), secI = document.getElementById('sec-in'), sub = document.getElementById('sub');
-        if (timeLeft >= 16000) {
-            let displaySec = Math.floor((timeLeft - 1) / 1000);
-            minI.value = Math.floor(displaySec / 60).toString().padStart(2, '0');
-            secI.value = (displaySec % 60).toString().padStart(2, '0');
-            minI.className = secI.className = "t-input yellow"; sub.style.display = "none";
-        } else {
-            let s = Math.floor(timeLeft / 1000), ms = Math.floor((timeLeft % 1000) / 10);
-            minI.value = "00"; secI.value = s.toString().padStart(2, '0');
-            sub.innerText = "." + ms.toString().padStart(2, '0');
-            minI.className = secI.className = "t-input red"; sub.style.display = "inline";
+
+    function editTime() {
+        let m = prompt("Nhập số phút:", "03");
+        let s = prompt("Nhập số giây:", "00");
+        if(m !== null && s !== null) {
+            timeLeft = (parseInt(m) * 60 + parseInt(s)) * 1000 + 980;
+            updateUI();
         }
     }
+
+    function updateUI() {
+        const mDisp = document.getElementById('m-disp');
+        const sDisp = document.getElementById('s-disp');
+        const tDisp = document.getElementById('t-display');
+        const sub = document.getElementById('sub');
+
+        if (timeLeft >= 16000) {
+            let totalSec = Math.floor((timeLeft - 1) / 1000);
+            mDisp.innerText = Math.floor(totalSec / 60).toString().padStart(2, '0');
+            sDisp.innerText = (totalSec % 60).toString().padStart(2, '0');
+            tDisp.className = "timer-display yellow-text";
+            sub.style.display = "none";
+        } else {
+            let s = Math.floor(timeLeft / 1000);
+            let ms = Math.floor((timeLeft % 1000) / 10);
+            mDisp.innerText = "00";
+            sDisp.innerText = s.toString().padStart(2, '0');
+            sub.innerText = "." + ms.toString().padStart(2, '0');
+            tDisp.className = "timer-display red-text";
+            sub.style.display = "block";
+        }
+    }
+
     function start() {
         if (timerId || timeLeft <= 0) return;
         initAudio(); let last = Date.now();
@@ -281,13 +248,26 @@
             if (timeLeft <= 0) { timeLeft = 0; stop(); updateUI(); ring(2000); } else updateUI();
         }, 20);
     }
+
     function stop() { clearInterval(timerId); timerId = null; }
+
     function ring(d) {
         if(!audioCtx) return;
         let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
         o.type = 'square'; o.frequency.value = 450; o.connect(g); g.connect(audioCtx.destination);
         o.start(); setTimeout(() => o.stop(), d);
     }
+
+    function togglePreset() {
+        const p = [180, 120, 60, 30];
+        let cur = Math.floor(timeLeft / 1000);
+        let next = p[(p.indexOf(cur === 0 ? 180 : cur) + 1) % p.length];
+        timeLeft = (next * 1000) + 980;
+        event.target.innerText = Math.floor(next/60) + ":" + (next%60||"00") + "▾";
+        updateUI();
+    }
+
+    // Overlay logic
     function openOverlay() { stop(); document.getElementById('overlay').style.display = 'flex'; ovTimeLeft = 60980; updateUIOV(); }
     function closeOverlay() { stopOV(); document.getElementById('overlay').style.display = 'none'; }
     function startOV() {
@@ -301,20 +281,8 @@
     }
     function stopOV() { clearInterval(ovTimerId); ovTimerId = null; }
     function updateUIOV() {
-        let totalSec = Math.max(0, Math.floor((ovTimeLeft - 1) / 1000));
-        let m = Math.floor(totalSec / 60).toString().padStart(2, '0'), s = (totalSec % 60).toString().padStart(2, '0');
-        document.getElementById('ov-time').innerText = m + ":" + s;
-    }
-    // Chế độ preset đơn giản
-    function togglePreset() {
-        const presets = [180, 120, 60, 30, 15];
-        let currentS = Math.floor(timeLeft / 1000);
-        let nextIdx = (presets.indexOf(currentS) + 1) % presets.length;
-        timeLeft = (presets[nextIdx] * 1000) + 980;
-        let m = Math.floor(presets[nextIdx]/60);
-        let s = presets[nextIdx]%60;
-        event.target.innerText = m + ":" + (s == 0 ? "00" : s) + "▾";
-        updateUI();
+        let s = Math.max(0, Math.floor((ovTimeLeft - 1) / 1000));
+        document.getElementById('ov-time').innerText = "00:" + s.toString().padStart(2, '0');
     }
 </script>
 </body>
