@@ -164,22 +164,6 @@
         el.innerText = Math.max(0, parseInt(el.innerText) + val); 
     }
 
-    // Bật/Tắt hoàn toàn tính năng Senshu
-    function toggleSenshuLock() {
-        senshuEnabled = !senshuEnabled;
-        const aka = document.getElementById('senshuAka');
-        const ao = document.getElementById('senshuAo');
-        if(!senshuEnabled) {
-            aka.classList.add('disabled');
-            ao.classList.add('disabled');
-            aka.classList.remove('active');
-            ao.classList.remove('active');
-        } else {
-            aka.classList.remove('disabled');
-            ao.classList.remove('disabled');
-        }
-    }
-
     // Kích hoạt Senshu cho một bên
     function activateSenshu(side) {
         if(!senshuEnabled) return;
