@@ -3,68 +3,78 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KARATE SCOREBOARD - MOBILE VERTICAL</title>
+    <title>KARATE SCOREBOARD - MOBILE OPTIMIZED</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #1a1a1a; --aka: #d32f2f; --ao: #1976d2; --yellow: #ffeb3b; --white: #ffffff; }
+        :root { --bg: #1a1a1a; --aka: #d32f2f; --ao: #1976d2; --yellow: #ffeb3b; --red: #f44336; }
+        
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background-color: var(--bg); color: white; font-family: 'Arial', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        body { 
+            background-color: var(--bg); color: white; font-family: 'Arial', sans-serif; 
+            margin: 0; padding: 0; display: flex; flex-direction: column; 
+            height: 100vh; overflow: hidden; width: 100vw;
+        }
 
-        /* Chia màn hình thành 2 vùng chính */
-        .players-section { display: flex; flex-direction: column; flex: 2; }
-        .side { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 5px; position: relative; border-bottom: 2px solid #000; }
+        /* Chia màn hình thành 2 vùng dọc: Điểm & Đồng hồ */
+        .players-section { display: flex; flex: 1.6; border-bottom: 2px solid #000; }
+        .side { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 5px; position: relative; }
         .aka { background-color: var(--aka); }
         .ao { background-color: var(--ao); }
 
-        .label { font-size: 1.2rem; font-weight: bold; margin-bottom: 2px; }
+        .name-label { font-size: 1.5rem; font-weight: bold; margin-bottom: 5px; opacity: 0.9; }
         
         /* Điểm số và Senshu */
         .score-box { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-        .score-val { font-family: 'Share Tech Mono', monospace; font-size: 5.5rem; line-height: 1; font-weight: bold; }
-        .senshu { width: 25px; height: 25px; border: 2px solid white; border-radius: 50%; cursor: pointer; }
-        .senshu.active { background-color: var(--yellow); border-color: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+        .score-val { font-family: 'Share Tech Mono', monospace; font-size: clamp(6rem, 20vh, 10rem); line-height: 1; font-weight: bold; }
+        .senshu { width: clamp(25px, 8vh, 40px); height: clamp(25px, 8vh, 40px); border: 3px solid white; border-radius: 50%; cursor: pointer; }
+        .senshu.active { background-color: var(--yellow); border-color: var(--yellow); box-shadow: 0 0 15px var(--yellow); }
 
-        /* Nút bấm tối ưu cho Mobile */
-        .btn-row { display: flex; gap: 6px; margin-bottom: 6px; width: 95%; justify-content: center; }
-        .btn-p { flex: 1; max-width: 60px; height: 35px; background: white; color: black; border: none; border-radius: 4px; font-weight: bold; font-size: 1rem; }
+        /* Nút điểm số - Làm TO ra cho dễ ấn */
+        .btn-row { display: flex; gap: 8px; margin: 10px 0; width: 95%; justify-content: center; }
+        .btn-p { flex: 1; height: clamp(40px, 12vh, 60px); max-width: 70px; background: white; color: black; border: none; border-radius: 6px; font-weight: bold; font-size: 1.5rem; }
         
-        .penalty-row { display: flex; gap: 4px; width: 95%; justify-content: center; }
-        .btn-c { flex: 1; max-width: 45px; height: 30px; background: rgba(0,0,0,0.3); color: white; border: 1px solid white; border-radius: 3px; font-size: 0.75rem; font-weight: bold; }
+        .penalty-row { display: flex; gap: 5px; width: 95%; justify-content: center; }
+        .btn-c { flex: 1; height: clamp(30px, 10vh, 50px); border: 1px solid white; background: rgba(0,0,0,0.3); color: white; border-radius: 4px; font-size: clamp(0.7rem, 2vh, 1rem); font-weight: bold; }
         .btn-c.active { background: var(--yellow); color: black; border-color: var(--yellow); }
 
-        /* Phần Đồng hồ phía dưới */
-        .timer-section { flex: 1; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: env(safe-area-inset-bottom); }
-        .timer-display { font-family: 'Share Tech Mono', monospace; font-size: 5rem; color: var(--yellow); margin-bottom: 10px; display: flex; align-items: baseline; }
-        .ms { font-size: 2.5rem; margin-left: 5px; color: #f44336; display: none; }
+        /* Phần Đồng hồ phía dưới - Chiếm phần thừa */
+        .timer-section { flex: 1; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+        
+        .timer-display { font-family: 'Share Tech Mono', monospace; font-size: clamp(5rem, 15vh, 8rem); color: var(--yellow); margin-bottom: 15px; display: flex; align-items: baseline; }
+        .ms { font-size: 0.6em; margin-left: 5px; color: var(--red); display: none; }
 
-        .controls { display: flex; gap: 10px; align-items: center; }
-        .btn-ctrl { padding: 10px 20px; border-radius: 5px; border: none; font-weight: bold; font-size: 0.9rem; color: white; }
+        .controls { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        
+        /* Nút điều khiển TO để không bị bấm hụt */
+        .btn-ctrl { padding: 15px 30px; border-radius: 8px; border: none; font-weight: bold; font-size: 1.1rem; color: white; cursor: pointer; text-transform: uppercase; }
         .start { background: #4caf50; }
         .stop { background: #f44336; }
         .reset { background: #555; }
         
-        .btn-clock { background: #d32f2f; width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; }
-        .btn-clock img { width: 25px; filter: invert(1); }
-
+        /* Nút icon đồng hồ đỏ */
+        .btn-clock { background: var(--red); width: 60px; height: 60px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+        
         /* Overlay nghỉ */
-        #rest-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
-        .rest-time { font-family: 'Share Tech Mono', monospace; font-size: 8rem; color: var(--yellow); }
+        #rest-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
+        .rest-time { font-family: 'Share Tech Mono', monospace; font-size: 10rem; color: var(--yellow); }
+
     </style>
 </head>
 <body onclick="setupAudio()">
 
     <div class="players-section">
         <div class="side aka">
-            <div class="label">AKA</div>
+            <div class="name-label">AKA</div>
             <div class="score-box">
                 <div class="score-val" id="ptsAka">0</div>
-                <div class="senshu" id="sAka" onclick="setSenshu('Aka')"></div>
+                <div class="senshu" id="sAka" onclick="toggleSenshu('Aka')"></div>
             </div>
             <div class="btn-row">
-                <button class="btn-p" onclick="add('ptsAka',1)">+1</button>
-                <button class="btn-p" onclick="add('ptsAka',2)">+2</button>
-                <button class="btn-p" onclick="add('ptsAka',3)">+3</button>
-                <button class="btn-p" onclick="add('ptsAka',-1)">-1</button>
+                <button class="btn-p" onclick="addScore('ptsAka',1)">+1</button>
+                <button class="btn-p" onclick="addScore('ptsAka',2)">+2</button>
+                <button class="btn-p" onclick="addScore('ptsAka',3)">+3</button>
+                <button class="btn-p" onclick="addScore('ptsAka',-1)">-1</button>
             </div>
             <div class="penalty-row">
                 <button class="btn-c" onclick="this.classList.toggle('active')">C1</button>
@@ -76,16 +86,16 @@
         </div>
 
         <div class="side ao">
-            <div class="label">AO</div>
+            <div class="name-label">AO</div>
             <div class="score-box">
-                <div class="senshu" id="sAo" onclick="setSenshu('Ao')"></div>
+                <div class="senshu" id="sAo" onclick="toggleSenshu('Ao')"></div>
                 <div class="score-val" id="ptsAo">0</div>
             </div>
             <div class="btn-row">
-                <button class="btn-p" onclick="add('ptsAo',1)">+1</button>
-                <button class="btn-p" onclick="add('ptsAo',2)">+2</button>
-                <button class="btn-p" onclick="add('ptsAo',3)">+3</button>
-                <button class="btn-p" onclick="add('ptsAo',-1)">-1</button>
+                <button class="btn-p" onclick="addScore('ptsAo',1)">+1</button>
+                <button class="btn-p" onclick="addScore('ptsAo',2)">+2</button>
+                <button class="btn-p" onclick="addScore('ptsAo',3)">+3</button>
+                <button class="btn-p" onclick="addScore('ptsAo',-1)">-1</button>
             </div>
             <div class="penalty-row">
                 <button class="btn-c" onclick="this.classList.toggle('active')">C1</button>
@@ -98,86 +108,92 @@
     </div>
 
     <div class="timer-section">
-        <div class="timer-display" id="display">03:00<span class="ms" id="ms">.00</span></div>
+        <div class="timer-display" id="mainDisplay">03:00<span class="ms" id="subMs">.00</span></div>
         <div class="controls">
-            <button class="btn-ctrl start" onclick="run()">START</button>
-            <button class="btn-ctrl stop" onclick="pause()">STOP</button>
+            <button class="btn-ctrl start" onclick="startTimer()">START</button>
+            <button class="btn-ctrl stop" onclick="stopTimer()">STOP</button>
             <button class="btn-ctrl reset" onclick="location.reload()">RESET</button>
-            <button class="btn-clock" onclick="showRest()">⏱</button>
+            <button class="btn-clock" onclick="openRest()">⏱</button>
         </div>
     </div>
 
     <div id="rest-ov">
         <div class="rest-time" id="rt">01:00</div>
         <div class="controls">
-            <button class="btn-ctrl start" onclick="runRest()">START</button>
-            <button class="btn-ctrl reset" onclick="hideRest()">CLOSE</button>
+            <button class="btn-ctrl start" onclick="startRest()">START</button>
+            <button class="btn-ctrl reset" onclick="closeRest()">ĐÓNG</button>
         </div>
     </div>
 
 <script>
-    let time = 180000, timer = null, audio = null;
-    let rTime = 60000, rTimer = null;
+    /* GIỮ NGUYÊN TOÀN BỘ LOGIC CỦA BẢN GỐC */
+    let timeLimit = 180000, mainTimerId = null, audioContext = null;
+    let restTimeLimit = 60000, restTimerId = null;
 
-    function setupAudio() { if(!audio) audio = new (window.AudioContext || window.webkitAudioContext)(); }
+    function setupAudio() { if(!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)(); }
 
-    function add(id, v) {
+    function addScore(id, v) {
         let e = document.getElementById(id);
         e.innerText = Math.max(0, parseInt(e.innerText) + v);
     }
 
-    function setSenshu(s) {
+    function toggleSenshu(side) {
         document.getElementById('sAka').classList.remove('active');
         document.getElementById('sAo').classList.remove('active');
-        document.getElementById('s' + s).classList.add('active');
+        document.getElementById('s' + side).classList.add('active');
     }
 
-    function update() {
-        let d = document.getElementById('display'), m = document.getElementById('ms');
+    function updateDisplay(time, displayId, msId) {
+        let d = document.getElementById(displayId), ms = document.getElementById(msId);
         if (time > 15000) {
             let s = Math.ceil(time/1000);
             d.childNodes[0].nodeValue = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-            d.style.color = "var(--yellow)"; m.style.display = "none";
+            d.style.color = "var(--yellow)";
+            if(ms) ms.style.display = "none";
         } else {
-            let s = Math.floor(time/1000), ms = Math.floor((time%1000)/10);
+            let s = Math.floor(time/1000), mili = Math.floor((time%1000)/10);
             d.childNodes[0].nodeValue = `00:${s.toString().padStart(2,'0')}`;
-            m.innerText = `.${ms.toString().padStart(2,'0')}`;
-            d.style.color = "#f44336"; m.style.display = "inline";
+            if(ms) {
+                ms.innerText = `.${mili.toString().padStart(2,'0')}`;
+                ms.style.display = "inline";
+            }
+            d.style.color = "var(--red)";
         }
     }
 
-    function run() {
-        if (timer || time <= 0) return;
+    function startTimer() {
+        if (mainTimerId || timeLimit <= 0) return;
+        setupAudio();
         let last = Date.now();
-        timer = setInterval(() => {
+        mainTimerId = setInterval(() => {
             let now = Date.now();
-            time -= (now - last); last = now;
-            if (time <= 0) { time = 0; pause(); beep(1500); }
-            update();
+            timeLimit -= (now - last); last = now;
+            if (timeLimit <= 0) { timeLimit = 0; stopTimer(); playBeep(2000); }
+            updateDisplay(timeLimit, 'mainDisplay', 'subMs');
         }, 50);
     }
 
-    function pause() { clearInterval(timer); timer = null; }
+    function stopTimer() { clearInterval(mainTimerId); mainTimerId = null; }
 
-    function beep(d) {
-        if(!audio) return;
-        let o = audio.createOscillator(), g = audio.createGain();
+    function playBeep(d) {
+        if(!audioContext) return;
+        let o = audioContext.createOscillator(), g = audioContext.createGain();
         o.type = "square"; o.frequency.value = 400;
-        o.connect(g); g.connect(audio.destination);
+        o.connect(g); g.connect(audioContext.destination);
         o.start(); setTimeout(() => o.stop(), d);
     }
 
-    function showRest() { document.getElementById('rest-ov').style.display = 'flex'; }
-    function hideRest() { clearInterval(rTimer); rTimer = null; document.getElementById('rest-ov').style.display = 'none'; }
+    function openRest() { stopTimer(); document.getElementById('rest-ov').style.display = 'flex'; updateDisplay(restTimeLimit, 'rt', null); }
+    function closeRest() { clearInterval(restTimerId); restTimerId = null; document.getElementById('rest-ov').style.display = 'none'; }
     
-    function runRest() {
-        if(rTimer) return;
+    function startRest() {
+        if(restTimerId) return;
+        setupAudio();
         let last = Date.now();
-        rTimer = setInterval(() => {
-            rTime -= (Date.now() - last); last = Date.now();
-            let s = Math.ceil(rTime/1000);
-            document.getElementById('rt').innerText = `00:${s.toString().padStart(2,'0')}`;
-            if(rTime <= 0) { clearInterval(rTimer); rTimer = null; beep(1000); }
+        restTimerId = setInterval(() => {
+            restTimeLimit -= (Date.now() - last); last = Date.now();
+            updateDisplay(restTimeLimit, 'rt', null);
+            if(restTimeLimit <= 0) { clearInterval(restTimerId); restTimerId = null; playBeep(1000); }
         }, 100);
     }
 </script>
