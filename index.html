@@ -7,59 +7,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #1e1e1e; 
-            --aka: #c00000; 
-            --ao: #0070c0; 
-            --yellow: #ffff00; 
-            --red: #ff0000;
+            --bg: #1e1e1e; --aka: #c00000; --ao: #0070c0; --yellow: #ffff00; --red: #ff0000;
         }
-        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        
         body { 
-            background-color: var(--bg); 
-            color: white; 
-            font-family: system-ui, sans-serif; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden;
-            user-select: none; 
+            background-color: var(--bg); color: white; font-family: system-ui, sans-serif; 
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; 
         }
 
-        /* Container Aka/Ao */
-        .score-container { 
-            display: flex; 
-            flex-direction: column; 
-            flex: 1; 
-            gap: 8px; 
-            padding: 8px;
-        }
-
+        .score-container { display: flex; flex-direction: column; flex: 1; gap: 8px; padding: 8px; }
         .side { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: space-evenly; 
-            border-radius: 20px; 
-            padding: 5px;
+            flex: 1; display: flex; flex-direction: column; align-items: center; 
+            justify-content: space-evenly; border-radius: 20px; padding: 5px; position: relative;
         }
         .aka { background-color: var(--aka); }
         .ao { background-color: var(--ao); }
 
-        .name-label { font-size: 1.5rem; font-weight: bold; }
-
         .score-row { display: flex; align-items: center; gap: 20px; }
-        .score-val { 
-            font-size: 6.5rem; 
-            font-weight: bold; 
-            font-family: 'Share Tech Mono', monospace; 
-            line-height: 1;
-        }
+        .score-val { font-size: 6.5rem; font-weight: bold; font-family: 'Share Tech Mono', monospace; line-height: 1; }
         
-        .senshu { width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; }
+        /* Senshu Style */
+        .senshu { 
+            width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; 
+            transition: all 0.2s; opacity: 1;
+        }
         .senshu.active { background-color: var(--yellow); border-color: var(--yellow); }
+        .senshu.disabled { opacity: 0.1; pointer-events: none; border-color: rgba(255,255,255,0.2); }
 
         .btn-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; width: 95%; }
         .btn-plus { padding: 12px 0; font-size: 1.2rem; border-radius: 10px; background: white; color: black; border: none; font-weight: bold; }
@@ -68,52 +41,27 @@
         .penalty { height: 40px; border: 1.5px solid white; background: none; color: white; border-radius: 6px; font-size: 0.9rem; font-weight: bold; }
         .penalty.active { background-color: var(--yellow); color: black; border-color: var(--yellow); }
 
-        /* --- TIMER DISPLAY FIX --- */
-        .timer-section { 
-            background-color: #000; 
-            padding: 10px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
+        /* --- TIMER --- */
+        .timer-section { background-color: #000; padding: 10px 0; display: flex; flex-direction: column; align-items: center; }
         .timer-display { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-family: 'Share Tech Mono', monospace; 
-            color: var(--yellow);
-            height: 120px; 
-            width: 100%;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Share Tech Mono', monospace; height: 120px; width: 100%;
         }
-
-        .t-num { 
-            font-size: 8rem; 
-            font-weight: bold; 
-            line-height: 1;
-            padding: 0 2px;
-            text-align: center;
-            transition: font-size 0.2s;
-        }
-
-        /* Thu nhỏ số chính khi hiện Mili giây để tránh bị thừa/tràn */
-        .red-text .t-num { font-size: 6.5rem; }
-
-        .dots { font-size: 5rem; line-height: 1; margin-bottom: 10px; }
+        .t-num { font-size: 8rem; font-weight: bold; line-height: 1; }
+        .dots { font-size: 6rem; line-height: 1; margin-bottom: 10px; padding: 0 5px; }
         
-        .time-sub { 
-            font-size: 2.8rem; 
-            color: var(--red); 
-            display: none; 
-            align-self: flex-end; 
-            padding-bottom: 12px;
-            margin-left: -5px;
+        /* Dấu chấm cực rõ cho 00.00 */
+        .decimal-point {
+            font-size: 8rem; line-height: 0.5; align-self: flex-end; 
+            padding-bottom: 20px; display: none; margin: 0 5px;
         }
+
+        .red-text .t-num { font-size: 8.5rem; } 
+        .red-text .ms-num { font-size: 6rem; }
 
         /* Controls */
         .controls { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 0.6fr; gap: 5px; width: 98%; margin-top: 10px; }
-        .btn-ctrl { padding: 15px 0; border-radius: 10px; color: white; font-weight: bold; border: none; font-size: 0.85rem; }
+        .btn-ctrl { padding: 15px 0; border-radius: 10px; color: white; font-weight: bold; border: none; font-size: 0.8rem; }
         .btn-start { background-color: #70ad47; }
         .btn-stop { background-color: #c00000; }
         .btn-gray { background-color: #555; }
@@ -122,10 +70,8 @@
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 2000; flex-direction: column; justify-content: center; align-items: center;
         }
-
         .yellow-text { color: var(--yellow); }
         .red-text { color: var(--red); }
-
         button:active { opacity: 0.8; transform: scale(0.96); }
     </style>
 </head>
@@ -133,10 +79,14 @@
 
     <div class="score-container">
         <div class="side aka">
-            <div class="name-label">AKA</div>
+            <div style="display:flex; justify-content: space-between; width:90%; align-items:center">
+                <div style="font-size:0.7rem" onclick="toggleSenshuLock()">SENSHU ⚙️</div>
+                <div style="font-weight:bold; font-size:1.5rem">AKA</div>
+                <div style="width:40px"></div>
+            </div>
             <div class="score-row">
                 <div class="score-val" id="scoreAka">0</div>
-                <div class="senshu" id="senshuAka" onclick="toggleSenshu('Aka')"></div>
+                <div class="senshu" id="senshuAka" onclick="activateSenshu('Aka')"></div>
             </div>
             <div class="btn-group">
                 <button class="btn-plus" onclick="changeScore('scoreAka', 1)">+1</button>
@@ -154,9 +104,9 @@
         </div>
 
         <div class="side ao">
-            <div class="name-label">AO</div>
+            <div style="font-weight:bold; font-size:1.5rem">AO</div>
             <div class="score-row">
-                <div class="senshu" id="senshuAo" onclick="toggleSenshu('Ao')"></div>
+                <div class="senshu" id="senshuAo" onclick="activateSenshu('Ao')"></div>
                 <div class="score-val" id="scoreAo">0</div>
             </div>
             <div class="btn-group">
@@ -178,11 +128,11 @@
     <div class="timer-section">
         <div class="timer-display" id="t-display">
             <div class="t-num" id="m-disp" onclick="editTime()">03</div>
-            <div class="dots">:</div>
+            <div class="dots" id="sep-colon">:</div>
             <div class="t-num" id="s-disp" onclick="editTime()">00</div>
-            <div id="sub" class="time-sub">.00</div>
+            <div class="decimal-point" id="sep-dot">.</div>
+            <div class="t-num ms-num" id="ms-disp" style="display:none">00</div>
         </div>
-        
         <div class="controls">
             <button class="btn-ctrl btn-start" onclick="start()">START</button>
             <button class="btn-ctrl btn-stop" onclick="stop()">STOP</button>
@@ -193,7 +143,7 @@
     </div>
 
     <div id="overlay">
-        <div id="ov-time" style="font-family:'Share Tech Mono'; font-size:12rem; color:var(--yellow)">01:00</div>
+        <div id="ov-time" style="font-family:'Share Tech Mono'; font-size:12rem; color:var(--yellow)">00:60</div>
         <div style="display:flex; gap:10px; width:90%; margin-top:20px">
             <button class="btn-ctrl btn-start" style="flex:1" onclick="startOV()">START</button>
             <button class="btn-ctrl btn-stop" style="flex:1" onclick="stopOV()">STOP</button>
@@ -205,6 +155,7 @@
     let timeLeft = 180980, timerId = null, audioCtx = null, played15s = false;
     let ovTimeLeft = 60980, ovTimerId = null;
     let currentPresetIdx = 0; 
+    let senshuEnabled = true; // Biến trạng thái Senshu
 
     function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     
@@ -213,40 +164,60 @@
         el.innerText = Math.max(0, parseInt(el.innerText) + val); 
     }
 
-    function toggleSenshu(side) {
-        document.getElementById('senshuAka').classList.toggle('active', side === 'Aka');
-        document.getElementById('senshuAo').classList.toggle('active', side === 'Ao');
-    }
-
-    function editTime() {
-        let m = prompt("Nhập số phút:", "03");
-        let s = prompt("Nhập số giây:", "00");
-        if(m !== null && s !== null) {
-            timeLeft = (parseInt(m) * 60 + parseInt(s)) * 1000 + 980;
-            updateUI();
+    // Bật/Tắt hoàn toàn tính năng Senshu
+    function toggleSenshuLock() {
+        senshuEnabled = !senshuEnabled;
+        const aka = document.getElementById('senshuAka');
+        const ao = document.getElementById('senshuAo');
+        if(!senshuEnabled) {
+            aka.classList.add('disabled');
+            ao.classList.add('disabled');
+            aka.classList.remove('active');
+            ao.classList.remove('active');
+        } else {
+            aka.classList.remove('disabled');
+            ao.classList.remove('disabled');
         }
     }
 
+    // Kích hoạt Senshu cho một bên
+    function activateSenshu(side) {
+        if(!senshuEnabled) return;
+        const aka = document.getElementById('senshuAka');
+        const ao = document.getElementById('senshuAo');
+        if(side === 'Aka') {
+            aka.classList.toggle('active');
+            ao.classList.remove('active');
+        } else {
+            ao.classList.toggle('active');
+            aka.classList.remove('active');
+        }
+    }
+
+    function editTime() {
+        let m = prompt("Phút:", "03"); let s = prompt("Giây:", "00");
+        if(m !== null && s !== null) { timeLeft = (parseInt(m) * 60 + parseInt(s)) * 1000 + 980; updateUI(); }
+    }
+
     function updateUI() {
-        const mDisp = document.getElementById('m-disp');
-        const sDisp = document.getElementById('s-disp');
-        const tDisp = document.getElementById('t-display');
-        const sub = document.getElementById('sub');
+        const mDisp = document.getElementById('m-disp'), sDisp = document.getElementById('s-disp');
+        const msDisp = document.getElementById('ms-disp'), sepColon = document.getElementById('sep-colon');
+        const sepDot = document.getElementById('sep-dot'), tDisp = document.getElementById('t-display');
 
         if (timeLeft >= 16000) {
             let totalSec = Math.floor((timeLeft - 1) / 1000);
             mDisp.innerText = Math.floor(totalSec / 60).toString().padStart(2, '0');
             sDisp.innerText = (totalSec % 60).toString().padStart(2, '0');
+            mDisp.style.display = "block"; sepColon.style.display = "block";
+            sepDot.style.display = "none"; msDisp.style.display = "none";
             tDisp.className = "timer-display yellow-text";
-            sub.style.display = "none";
         } else {
-            let s = Math.floor(timeLeft / 1000);
-            let ms = Math.floor((timeLeft % 1000) / 10);
-            mDisp.innerText = "00";
+            let s = Math.floor(timeLeft / 1000), ms = Math.floor((timeLeft % 1000) / 10);
+            mDisp.style.display = "none"; sepColon.style.display = "none";
             sDisp.innerText = s.toString().padStart(2, '0');
-            sub.innerText = "." + ms.toString().padStart(2, '0');
+            msDisp.innerText = ms.toString().padStart(2, '0');
+            sepDot.style.display = "block"; msDisp.style.display = "block";
             tDisp.className = "timer-display red-text";
-            sub.style.display = "block";
         }
     }
 
@@ -262,7 +233,6 @@
     }
 
     function stop() { clearInterval(timerId); timerId = null; }
-
     function ring(d) {
         if(!audioCtx) return;
         let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
@@ -274,17 +244,9 @@
         const p = [180, 120, 90, 60, 15];
         currentPresetIdx = (currentPresetIdx + 1) % p.length;
         let next = p[currentPresetIdx];
-        
-        timeLeft = (next * 1000) + 980;
-        played15s = false; 
-        
-        let m = Math.floor(next / 60);
-        let s = next % 60;
-        let displayS = s === 0 ? "00" : s.toString().padStart(2, '0');
-        document.getElementById('presetBtn').innerText = m + ":" + displayS + "▾";
-        
-        stop(); 
-        updateUI();
+        timeLeft = (next * 1000) + 980; played15s = false; 
+        document.getElementById('presetBtn').innerText = Math.floor(next/60) + ":" + (next%60).toString().padStart(2,'0') + "▾";
+        stop(); updateUI();
     }
 
     function openOverlay() { stop(); document.getElementById('overlay').style.display = 'flex'; ovTimeLeft = 60980; updateUIOV(); }
